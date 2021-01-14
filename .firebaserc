@@ -1,7 +1,5 @@
 {
   "projects": {
-    "default": "mapeo-webmaps-staging",
-    "staging": "mapeo-webmaps-staging",
-    "production": "mapeo-webmaps"
+    "default": "mapeo-icca-boundaries",
   }
 }

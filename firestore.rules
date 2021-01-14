@@ -7,18 +7,13 @@ service cloud.firestore {
       }
       allow read, write: if isInGroup();
 
-      match /maps/{mapId} {
+      match /iccas/{iccaId} {
         function isPublicMap() {
-          return get(/databases/$(database)/documents/groups/$(groupId)/maps/$(mapId)).data.public == true;
+          return get(/databases/$(database)/documents/groups/$(groupId)/iccas/$(iccaId)).data.public == true;
         }
         allow read: if isInGroup() || resource.data.public == true;
         // If you create a map, you must set yourself as the owner.
         allow write: if isInGroup();
-
-        match /observations/{reportId} {
-          allow read: if isInGroup() || isPublicMap();
-          allow write: if isInGroup();
-        }
       }
     }
   }
