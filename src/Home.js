@@ -23,7 +23,7 @@ import { defineMessages, useIntl } from "react-intl";
 
 import MapItem from "./MapItem";
 import LoadingScreen from "./LoadingScreen";
-import useCreateMap from "./hooks/useCreateMap";
+import useCreateBoundary from "./hooks/useCreateBoundary";
 import Typography from "@material-ui/core/Typography";
 import UploadProgress from "./UploadProgress";
 import EditDialog from "./EditDialog";
@@ -32,29 +32,29 @@ const msgs = defineMessages({
   empty: {
     id: "empty_state",
     defaultMessage:
-      'Click "ADD MAP" to publicly share a map from a .mapeomap file exported from Mapeo'
+      'Click "ADD MAP" to publicly share a map from a .mapeomap file exported from Mapeo',
   },
   confirmDeleteTitle: {
     id: "confirm_delete_title",
-    defaultMessage: "Delete this map?"
+    defaultMessage: "Delete this map?",
   },
   confirmDeleteDesc: {
     id: "confirm_delete_desc",
     defaultMessage:
-      "If you delete this map, links to it will no longer work and it will no longer be available on the internet"
+      "If you delete this map, links to it will no longer work and it will no longer be available on the internet",
   },
   addMap: {
     id: "add_map_button",
-    defaultMessage: "Add Map"
+    defaultMessage: "Add Map",
   },
   confirmCancel: {
     id: "confirm_cancel",
-    defaultMessage: "No, Cancel"
+    defaultMessage: "No, Cancel",
   },
   confirmConfirm: {
     id: "confirm_confirm",
-    defaultMessage: "Yes"
-  }
+    defaultMessage: "Yes",
+  },
 });
 
 // Unzips a File and returns an array of objects containing the file data (as an
@@ -69,11 +69,11 @@ async function unzip(zipfile) {
       return;
     const type = path.extname(filepath) === ".json" ? "string" : "arraybuffer";
     filePromises.push(
-      file.async(type).then(data => ({
+      file.async(type).then((data) => ({
         type,
         data,
         name: file.name,
-        date: file.date
+        date: file.date,
       }))
     );
   });
@@ -140,9 +140,12 @@ export default function Home({ location, initializing }) {
   const [editing, setEditing] = useState();
   const [confirm, setConfirm] = useState();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [progress, createMap, retry] = useCreateMap();
+  const [state, createMap, retry] = useCreateBoundary();
   const [user] = useAuthState(firebase.auth());
-  const [maps = [], loading] = useCollectionData(
+  const [
+    maps = [],
+    loading,
+  ] = useCollectionData(
     firebase
       .firestore()
       .collection(`groups/${user.uid}/maps`)
@@ -150,10 +153,8 @@ export default function Home({ location, initializing }) {
     { idField: "id" }
   );
 
-  if (progress.error) console.log(progress.error);
-
   const onDrop = useCallback(
-    async acceptedFiles => {
+    async (acceptedFiles) => {
       if (!acceptedFiles.length || !acceptedFiles[0].name.match(/.mapeomap$/))
         return console.log("invalid file", acceptedFiles[0]);
       const files = await unzip(acceptedFiles[0]);
@@ -163,7 +164,7 @@ export default function Home({ location, initializing }) {
   );
 
   const handleDelete = useCallback(
-    id => {
+    (id) => {
       const confirm = {
         title: formatMessage(msgs.confirmDeleteTitle),
         content: formatMessage(msgs.confirmDeleteDesc),
@@ -174,7 +175,7 @@ export default function Home({ location, initializing }) {
             .doc(id)
             .delete()
             .then(() => setConfirmOpen(false));
-        }
+        },
       };
       setConfirm(confirm);
       setConfirmOpen(true);
@@ -187,35 +188,42 @@ export default function Home({ location, initializing }) {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
-    noClick: true
+    noClick: true,
   });
 
   if (loading || initializing) return <LoadingScreen />;
 
   return (
     <div {...getRootProps()} className={classes.root}>
-      <AddMapButton disabled={progress.loading} inputProps={getInputProps()} />
+      <AddMapButton
+        disabled={state.value === "loading"}
+        inputProps={getInputProps()}
+      />
       <Container maxWidth="md" className={classes.container}>
         <TransitionGroup>
-          {progress.loading && (
+          {state.value === "loading" && (
             <Grow in>
-              <UploadProgress {...progress} retry={retry} />
+              <UploadProgress
+                state={state.value}
+                error={state.error}
+                retry={retry}
+              />
             </Grow>
           )}
           {maps
-            .filter(map => map.id !== progress.id || progress.done)
-            .map(map => (
+            .filter((map) => map.id !== state.id || state.value === "done")
+            .map((map) => (
               <Grow in key={map.id}>
                 <MapItem
                   {...map}
                   onDelete={handleDelete}
-                  onEdit={id => setEditing(id)}
+                  onEdit={(id) => setEditing(id)}
                   shareUrl={shareUrlBase + map.id}
                 />
               </Grow>
             ))}
         </TransitionGroup>
-        {!progress.loading && !maps.length && (
+        {state.value !== "loading" && !maps.length && (
           <Typography
             variant="body1"
             color="textSecondary"
@@ -246,7 +254,7 @@ const useStyles = makeStyles({
     flexGrow: 1,
     display: "flex",
     flexDirection: "column",
-    position: "relative"
+    position: "relative",
   },
   container: {
     flex: 1,
@@ -254,34 +262,34 @@ const useStyles = makeStyles({
     flexDirection: "column",
     padding: 24,
     paddingTop: 36,
-    alignItems: "stretch"
+    alignItems: "stretch",
   },
   loading: {
     flexGrow: 1,
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   image: {
     width: 400,
-    display: "block"
+    display: "block",
   },
   fab: {
     position: "absolute",
     top: -24,
     zIndex: 2,
-    left: 24
+    left: 24,
   },
   fabDisabled: {
-    backgroundColor: "#cccccc !important"
+    backgroundColor: "#cccccc !important",
   },
   text: {
     maxWidth: "30em",
     alignSelf: "center",
-    paddingTop: 24
+    paddingTop: 24,
   },
   mono: {
     fontFamily: "monospace",
-    fontSize: "1.3em"
-  }
+    fontSize: "1.3em",
+  },
 });
