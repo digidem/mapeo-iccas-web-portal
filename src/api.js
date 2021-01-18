@@ -16,5 +16,5 @@ export function createBoundary(id, metadata, geojson) {
   const iccasRef = db.collection(`groups/${user.uid}/iccas`);
   const iccaRef = id ? iccasRef.doc(id) : iccasRef.doc();
 
-  return iccaRef.set({ ...metadata, geojson });
+  return iccaRef.set({ ...metadata, geojson: JSON.stringify(geojson) });
 }

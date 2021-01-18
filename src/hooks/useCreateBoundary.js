@@ -61,7 +61,7 @@ export default function useCreateBoundary() {
     try {
       await createBoundaryPromise;
       if (error) return setError(error);
-      setState("loading");
+      setState("done");
     } catch (e) {
       setState("error");
       setError(e);

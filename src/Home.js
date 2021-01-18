@@ -57,8 +57,10 @@ const msgs = defineMessages({
   },
 });
 
-// Unzips a File and returns an array of objects containing the file data (as an
-// arraybuffer or string), filename, date
+// Unzips a File and returns an array of objects containing the file data (as a
+// string), filename, date. Note: the original implementation from mapeo-webmaps
+// needed arraybuffers for images, for icca packages all files are text (only
+// json and geojson) so we drop any files in the zip that don't match the extension
 async function unzip(zipfile) {
   const zip = await new JSZip().loadAsync(zipfile);
   const filePromises = [];
@@ -67,7 +69,10 @@ async function unzip(zipfile) {
     // Ignore folders, dot files and __MACOSX files and other strange files we don't need
     if (file.dir || filepath.startsWith("__") || filename.startsWith("."))
       return;
-    const type = path.extname(filepath) === ".json" ? "string" : "arraybuffer";
+    // Ignore files that are not .json or .geojson
+    if (path.extname(filepath) !== ".json" && path.extname(filepath) !== ".geojson")
+      return;
+    const type = 'string';
     filePromises.push(
       file.async(type).then((data) => ({
         type,
