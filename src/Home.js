@@ -32,7 +32,7 @@ const msgs = defineMessages({
   empty: {
     id: "empty_state",
     defaultMessage:
-      'Click "ADD MAP" to publicly share a map from a .mapeomap file exported from Mapeo',
+      'Click "ADD MAP" to publicly share a map from a .mapeoicca file exported from Mapeo',
   },
   confirmDeleteTitle: {
     id: "confirm_delete_title",
@@ -85,7 +85,7 @@ const AddMapButton = ({ disabled, inputProps }) => {
   const { formatMessage } = useIntl();
   return (
     <>
-      <input {...inputProps} id="contained-button-file" accept=".mapeomap" />
+      <input {...inputProps} id="contained-button-file" accept=".mapeoicca" />
       <label htmlFor="contained-button-file">
         <Zoom in key={1}>
           <Fab
@@ -155,7 +155,7 @@ export default function Home({ location, initializing }) {
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
-      if (!acceptedFiles.length || !acceptedFiles[0].name.match(/.mapeomap$/))
+      if (!acceptedFiles.length || !acceptedFiles[0].name.match(/.mapeoicca$/))
         return console.log("invalid file", acceptedFiles[0]);
       const files = await unzip(acceptedFiles[0]);
       createMap(files);
