@@ -55,7 +55,7 @@ export default function useCreateBoundary() {
     geojsonRef.current = geojson;
 
     // Don't await, we can start uploading files whilst the map is created
-    const createBoundaryPromise = api.createMap(id, metadata, geojson);
+    const createBoundaryPromise = api.createBoundary(id, metadata, geojson);
     setId(createBoundaryPromise.id);
 
     try {
