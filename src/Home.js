@@ -153,7 +153,7 @@ export default function Home({ location, initializing }) {
   ] = useCollectionData(
     firebase
       .firestore()
-      .collection(`groups/${user.uid}/maps`)
+      .collection(`groups/${user.uid}/iccas`)
       .orderBy("createdAt", "desc"),
     { idField: "id" }
   );
@@ -176,7 +176,7 @@ export default function Home({ location, initializing }) {
         action: () => {
           firebase
             .firestore()
-            .collection(`groups/${user.uid}/maps`)
+            .collection(`groups/${user.uid}/iccas`)
             .doc(id)
             .delete()
             .then(() => setConfirmOpen(false));
@@ -188,7 +188,7 @@ export default function Home({ location, initializing }) {
     [formatMessage, user.uid]
   );
 
-  const shareUrlBase = `https://maps-public.mapeo.world/groups/${user.uid}/maps/`;
+  const shareUrlBase = `https://maps-public.mapeo.world/groups/${user.uid}/iccas/`;
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
