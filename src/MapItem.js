@@ -2,13 +2,11 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
-import MenuIcon from "@material-ui/icons/MoreVert";
 import LinkIcon from "@material-ui/icons/Link";
 import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 import { defineMessages, useIntl } from "react-intl";
 
 const msgs = defineMessages({
@@ -40,15 +38,6 @@ export default function MapItem({
 }) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  function handleClick(event) {
-    setAnchorEl(event.currentTarget);
-  }
-
-  function handleClose() {
-    setAnchorEl(null);
-  }
 
   return (
     <Card className={classes.root}>
@@ -61,31 +50,19 @@ export default function MapItem({
             <LinkIcon />
           </IconButton>
         </Tooltip>
+        {/* Temporarily disable edit functionality
         <Tooltip title={formatMessage(msgs.edit)} placement="top">
           <IconButton onClick={() => onEdit(id)}>
             <EditIcon />
           </IconButton>
         </Tooltip>
-        <IconButton
-          aria-controls="simple-menu"
-          aria-haspopup="true"
-          onClick={handleClick}
-        >
-          <MenuIcon />
-        </IconButton>
+        */}
+        <Tooltip title={formatMessage(msgs.deleteMap)} placement="top">
+          <IconButton onClick={() => onDelete(id)}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       </div>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem disabled>{formatMessage(msgs.replaceData)}</MenuItem>
-        <MenuItem onClick={() => onDelete(id)}>
-          {formatMessage(msgs.deleteMap)}
-        </MenuItem>
-      </Menu>
       <Typography
         variant="body2"
         color="textSecondary"
