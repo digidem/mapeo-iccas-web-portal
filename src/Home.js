@@ -188,7 +188,7 @@ export default function Home({ location, initializing }) {
     [formatMessage, user.uid]
   );
 
-  const shareUrlBase = `https://maps-public.mapeo.world/groups/${user.uid}/iccas/`;
+  const shareUrlBase = `https://firestore.googleapis.com/v1beta1/projects/mapeo-icca-boundaries/databases/(default)/documents/groups/${user.uid}/maps/`;
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,

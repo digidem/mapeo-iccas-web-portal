@@ -72,7 +72,7 @@ export default function EditDialog({ open, id, onClose }) {
   const smallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [user] = useAuthState(firebase.auth());
   const [value, loading] = useDocumentData(
-    firebase.firestore().doc(`groups/${user.uid}/maps/${id}`)
+    firebase.firestore().doc(`groups/${user.uid}/iccas/${id}`)
   );
   const [saving, setSaving] = useState();
   const [title, setTitle] = useState();
@@ -94,7 +94,7 @@ export default function EditDialog({ open, id, onClose }) {
     setSaving(true);
     firebase
       .firestore()
-      .doc(`groups/${user.uid}/maps/${id}`)
+      .doc(`groups/${user.uid}/iccas/${id}`)
       .set({
         ...value,
         title: title || value.title,
