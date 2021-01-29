@@ -70,9 +70,12 @@ async function unzip(zipfile) {
     if (file.dir || filepath.startsWith("__") || filename.startsWith("."))
       return;
     // Ignore files that are not .json or .geojson
-    if (path.extname(filepath) !== ".json" && path.extname(filepath) !== ".geojson")
+    if (
+      path.extname(filepath) !== ".json" &&
+      path.extname(filepath) !== ".geojson"
+    )
       return;
-    const type = 'string';
+    const type = "string";
     filePromises.push(
       file.async(type).then((data) => ({
         type,
@@ -188,7 +191,7 @@ export default function Home({ location, initializing }) {
     [formatMessage, user.uid]
   );
 
-  const shareUrlBase = `https://firestore.googleapis.com/v1beta1/projects/mapeo-icca-boundaries/databases/(default)/documents/groups/${user.uid}/maps/`;
+  const shareUrlBase = `/api/groups/${user.uid}/iccas/`;
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
