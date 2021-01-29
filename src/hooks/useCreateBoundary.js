@@ -45,8 +45,11 @@ export default function useCreateBoundary() {
     setError(null);
     setState("loading");
 
-    if (!geojson || !geojson.features || !geojson.features.length)
-      return setError(new Error("No data found in file"));
+    if (!geojson || !geojson.features || !geojson.features.length) {
+      setState("error");
+      setError(new Error("No data found in file"));
+      return;
+    }
     metadata.title = metadata.title || "My ICCA Boundary";
     metadata.public = true;
 
