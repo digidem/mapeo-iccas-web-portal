@@ -4,7 +4,7 @@ const firebase = require("@firebase/rules-unit-testing");
 const _test = require("tape-promise").default;
 const test = _test(tape);
 
-const projectId = "mapeo-webmaps";
+const projectId = "mapeo-icca-boundaries";
 // const coverageUrl = `http://localhost:8080/emulator/v1/projects/${projectId}:ruleCoverage.html`;
 
 const rules = fs.readFileSync("firestore.rules", "utf8");
@@ -36,28 +36,26 @@ const assertSucceeds = (t) => (get, msg) =>
 test("Anonymous user read", async function (t) {
   const fixture = {
     "groups/1": { foo: "bar", public: true },
-    "groups/1/maps/1": { foo: "bar", public: true },
-    "groups/1/maps/2": { qux: "baz" },
-    "groups/1/maps/1/observations/1": {},
-    "groups/1/maps/2/observations/1": {},
+    "groups/1/iccas/1": { foo: "bar", public: true },
+    "groups/1/iccas/2": { qux: "baz" },
   };
   const db = await getDb(null, fixture);
 
   // Maps
   await assertSucceeds(t)(
-    db.collection("groups/1/maps").where("public", "==", true).get(),
+    db.collection("groups/1/iccas").where("public", "==", true).get(),
     "Can read list of public maps"
   );
   await assertFails(t)(
-    db.collection("groups/1/maps").get(),
+    db.collection("groups/1/iccas").get(),
     "Reading all records fails"
   );
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/1").get(),
+    db.doc("groups/1/iccas/1").get(),
     "Can read public record"
   );
   await assertFails(t)(
-    db.doc("groups/1/maps/2").get(),
+    db.doc("groups/1/iccas/2").get(),
     "Cannot read non-public record"
   );
 
@@ -71,73 +69,24 @@ test("Anonymous user read", async function (t) {
     "Cannot read single group record"
   );
 
-  // Observations
-  await assertSucceeds(t)(
-    db.collection("groups/1/maps/1/observations").get(),
-    "Can read observations of public map"
-  );
-  await assertFails(t)(
-    db.collection("groups/1/maps/2/observations").get(),
-    "Cannot read observations of non-public map"
-  );
-  t.end();
-});
-
-test("Anonymous user read", async function (t) {
-  const fixture = {
-    "groups/1": { foo: "bar", public: true },
-    "groups/1/maps/1": { foo: "bar", public: true },
-    "groups/1/maps/2": { qux: "baz" },
-    "groups/1/maps/1/observations/1": {},
-    "groups/1/maps/2/observations/1": {},
-  };
-  const db = await getDb(null, fixture);
-
-  // Maps
-  await assertFails(t)(
-    db.doc("groups/1/maps/1").set({}),
-    "Can update public record"
-  );
-  await assertFails(t)(
-    db.doc("groups/1/maps/2").set({}),
-    "Cannot update non-public record"
-  );
-
-  // Groups
-  await assertFails(t)(
-    db.doc("groups/1").set({}),
-    "Cannot update single group record"
-  );
-
-  // Observations
-  await assertFails(t)(
-    db.doc("groups/1/maps/1/observations/1").set({}),
-    "Cannot update observations of public map"
-  );
-  await assertFails(t)(
-    db.doc("groups/1/maps/2/observations/1").set({}),
-    "Cannot update observations of non-public map"
-  );
   t.end();
 });
 
 test("Anonymous user update", async function (t) {
   const fixture = {
     "groups/1": { foo: "bar", public: true },
-    "groups/1/maps/1": { foo: "bar", public: true },
-    "groups/1/maps/2": { qux: "baz" },
-    "groups/1/maps/1/observations/1": {},
-    "groups/1/maps/2/observations/1": {},
+    "groups/1/iccas/1": { foo: "bar", public: true },
+    "groups/1/iccas/2": { qux: "baz" },
   };
   const db = await getDb(null, fixture);
 
   // Maps
   await assertFails(t)(
-    db.doc("groups/1/maps/1").set({}),
+    db.doc("groups/1/iccas/1").set({}),
     "Cannot update public record"
   );
   await assertFails(t)(
-    db.doc("groups/1/maps/2").set({}),
+    db.doc("groups/1/iccas/2").set({}),
     "Cannot update non-public record"
   );
 
@@ -147,35 +96,24 @@ test("Anonymous user update", async function (t) {
     "Cannot update single group record"
   );
 
-  // Observations
-  await assertFails(t)(
-    db.doc("groups/1/maps/1/observations/1").set({}),
-    "Cannot update observations of public map"
-  );
-  await assertFails(t)(
-    db.doc("groups/1/maps/2/observations/1").set({}),
-    "Cannot update observations of non-public map"
-  );
   t.end();
 });
 
 test("Anonymous user delete", async function (t) {
   const fixture = {
     "groups/1": { foo: "bar", public: true },
-    "groups/1/maps/1": { foo: "bar", public: true },
-    "groups/1/maps/2": { qux: "baz" },
-    "groups/1/maps/1/observations/1": {},
-    "groups/1/maps/2/observations/1": {},
+    "groups/1/iccas/1": { foo: "bar", public: true },
+    "groups/1/iccas/2": { qux: "baz" },
   };
   const db = await getDb(null, fixture);
 
   // Maps
   await assertFails(t)(
-    db.doc("groups/1/maps/1").delete(),
+    db.doc("groups/1/iccas/1").delete(),
     "Cannot update public record"
   );
   await assertFails(t)(
-    db.doc("groups/1/maps/2").delete(),
+    db.doc("groups/1/iccas/2").delete(),
     "Cannot update non-public record"
   );
 
@@ -185,28 +123,19 @@ test("Anonymous user delete", async function (t) {
     "Cannot update single group record"
   );
 
-  // Observations
-  await assertFails(t)(
-    db.doc("groups/1/maps/1/observations/1").delete(),
-    "Cannot update observations of public map"
-  );
-  await assertFails(t)(
-    db.doc("groups/1/maps/2/observations/1").delete(),
-    "Cannot update observations of non-public map"
-  );
   t.end();
 });
 
 test("Anonymous user create", async function (t) {
   const db = await getDb(null, {
     "groups/1": {},
-    "groups/1/maps/1": { public: true },
+    "groups/1/iccas/1": { public: true },
   });
 
   // Maps
   await assertFails(t)(
-    db.collection("groups/1/maps").add({}),
-    "Cannot create map"
+    db.collection("groups/1/iccas").add({}),
+    "Cannot create ICCA boundary"
   );
 
   // Groups
@@ -215,59 +144,46 @@ test("Anonymous user create", async function (t) {
     "Cannot create single group record"
   );
 
-  // Observations
-  await assertFails(t)(
-    db.collection("groups/1/maps/1/observations").add({}),
-    "Cannot create observations"
-  );
-  await assertFails(t)(
-    db.collection("groups/2/maps/2/observations").add({}),
-    "Cannot create observations"
-  );
   t.end();
 });
 
 test("Logged-in user read", async function (t) {
   const fixture = {
     "groups/1": { foo: "bar", public: true },
-    "groups/1/maps/1": { foo: "bar", public: true },
-    "groups/1/maps/2": { qux: "baz" },
-    "groups/1/maps/1/observations/1": {},
-    "groups/1/maps/2/observations/1": {},
-    "groups/2/maps/1": { foo: "bar2", public: true },
-    "groups/2/maps/2": { qux: "baz2" },
-    "groups/2/maps/1/observations/1": {},
-    "groups/2/maps/2/observations/1": {},
+    "groups/1/iccas/1": { foo: "bar", public: true },
+    "groups/1/iccas/2": { qux: "baz" },
+    "groups/2/iccas/1": { foo: "bar2", public: true },
+    "groups/2/iccas/2": { qux: "baz2" },
   };
   const db = await getDb({ uid: "1" }, fixture);
 
   // Maps
   await assertSucceeds(t)(
-    db.collection("groups/1/maps").get(),
+    db.collection("groups/1/iccas").get(),
     "Can read list of all own maps"
   );
   await assertSucceeds(t)(
-    db.collection("groups/2/maps").where("public", "==", true).get(),
-    "Can read list of public maps"
+    db.collection("groups/2/iccas").where("public", "==", true).get(),
+    "Can read list of public iccas"
   );
   await assertFails(t)(
-    db.collection("groups/2/maps").get(),
-    "Cannot read all maps of other user"
+    db.collection("groups/2/iccas").get(),
+    "Cannot read all iccas of other user"
   );
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/1").get(),
+    db.doc("groups/1/iccas/1").get(),
     "Can read own public record"
   );
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/2").get(),
+    db.doc("groups/1/iccas/2").get(),
     "Can read own non-public record"
   );
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/1").get(),
+    db.doc("groups/1/iccas/1").get(),
     "Can read other's public record"
   );
   await assertFails(t)(
-    db.doc("groups/2/maps/2").get(),
+    db.doc("groups/2/iccas/2").get(),
     "Cannot read other's non-public record"
   );
 
@@ -281,49 +197,30 @@ test("Logged-in user read", async function (t) {
     "Can read own group record"
   );
 
-  // Observations
-  await assertSucceeds(t)(
-    db.collection("groups/1/maps/1/observations").get(),
-    "Can read observations of public map"
-  );
-  await assertSucceeds(t)(
-    db.collection("groups/1/maps/2/observations").get(),
-    "Can read observations of own non-public map"
-  );
-  await assertSucceeds(t)(
-    db.collection("groups/2/maps/1/observations").get(),
-    "Can read observations of other's public map"
-  );
-  await assertFails(t)(
-    db.collection("groups/2/maps/2/observations").get(),
-    "Cannot read observations of other's non-public map"
-  );
   t.end();
 });
 
 test("Logged-in user update", async function (t) {
   const fixture = {
     "groups/1": { foo: "bar", public: true },
-    "groups/1/maps/1": { foo: "bar", public: true },
-    "groups/1/maps/2": { qux: "baz" },
-    "groups/1/maps/1/observations/1": {},
-    "groups/1/maps/2/observations/1": {},
-    "groups/2/maps/1": { foo: "bar2", public: true },
-    "groups/2/maps/2": { qux: "baz2" },
+    "groups/1/iccas/1": { foo: "bar", public: true },
+    "groups/1/iccas/2": { qux: "baz" },
+    "groups/2/iccas/1": { foo: "bar2", public: true },
+    "groups/2/iccas/2": { qux: "baz2" },
   };
   const db = await getDb({ uid: "1" }, fixture);
 
   // Maps
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/1").set({}),
+    db.doc("groups/1/iccas/1").set({}),
     "Can update public record"
   );
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/2").set({}),
+    db.doc("groups/1/iccas/2").set({}),
     "Can update non-public record"
   );
   await assertFails(t)(
-    db.doc("groups/2/maps/1").set({}),
+    db.doc("groups/2/iccas/1").set({}),
     "Cannot update other's record"
   );
 
@@ -337,41 +234,30 @@ test("Logged-in user update", async function (t) {
     "Cannot update other's group record"
   );
 
-  // Observations
-  await assertSucceeds(t)(
-    db.doc("groups/1/maps/1/observations/1").set({}),
-    "Can update own observation"
-  );
-  await assertFails(t)(
-    db.doc("groups/2/maps/1/observations/1").set({}),
-    "Cannot update other's observation"
-  );
   t.end();
 });
 
 test("Logged-in user delete", async function (t) {
   const fixture = {
     "groups/1": { foo: "bar", public: true },
-    "groups/1/maps/1": { foo: "bar", public: true },
-    "groups/1/maps/2": { qux: "baz" },
-    "groups/1/maps/1/observations/1": {},
-    "groups/1/maps/2/observations/1": {},
-    "groups/2/maps/1": { foo: "bar2", public: true },
-    "groups/2/maps/2": { qux: "baz2" },
+    "groups/1/iccas/1": { foo: "bar", public: true },
+    "groups/1/iccas/2": { qux: "baz" },
+    "groups/2/iccas/1": { foo: "bar2", public: true },
+    "groups/2/iccas/2": { qux: "baz2" },
   };
   const db = await getDb({ uid: "1" }, fixture);
 
   // Maps
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/1").delete(),
+    db.doc("groups/1/iccas/1").delete(),
     "Can update public record"
   );
   await assertSucceeds(t)(
-    db.doc("groups/1/maps/2").delete(),
+    db.doc("groups/1/iccas/2").delete(),
     "Can update non-public record"
   );
   await assertFails(t)(
-    db.doc("groups/2/maps/1").delete(),
+    db.doc("groups/2/iccas/1").delete(),
     "Cannot update other's record"
   );
 
@@ -385,15 +271,6 @@ test("Logged-in user delete", async function (t) {
     "Cannot update other's group record"
   );
 
-  // Observations
-  await assertSucceeds(t)(
-    db.doc("groups/1/maps/1/observations/1").delete(),
-    "Can update own observation"
-  );
-  await assertFails(t)(
-    db.doc("groups/2/maps/1/observations/1").delete(),
-    "Cannot update other's observation"
-  );
   t.end();
 });
 
@@ -402,17 +279,17 @@ test("Logged-in user create", async function (t) {
     { uid: "1" },
     {
       "groups/1": {},
-      "groups/1/maps/1": { public: true },
+      "groups/1/iccas/1": { public: true },
     }
   );
 
   // Maps
   await assertSucceeds(t)(
-    db.collection("groups/1/maps").add({}),
+    db.collection("groups/1/iccas").add({}),
     "Can create map in own group"
   );
   await assertFails(t)(
-    db.collection("groups/2/maps").add({}),
+    db.collection("groups/2/iccas").add({}),
     "Cannot create map in other's group"
   );
 
@@ -422,15 +299,6 @@ test("Logged-in user create", async function (t) {
     "Cannot create single group record"
   );
 
-  // Observations
-  await assertSucceeds(t)(
-    db.collection("groups/1/maps/1/observations").add({}),
-    "Can create observations in own map"
-  );
-  await assertFails(t)(
-    db.collection("groups/2/maps/1/observations").add({}),
-    "Cannot create observations in other's map"
-  );
   t.end();
 });
 
