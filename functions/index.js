@@ -22,6 +22,7 @@ router.get(
         .doc(iccaId);
       const doc = await ref.get();
       const icca = doc.data();
+      delete icca.public
       icca.geojson = JSON.parse(icca.geojson);
       res.setHeader("Content-Type", "application/json");
       res.send(JSON.stringify(icca));
