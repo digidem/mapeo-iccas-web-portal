@@ -21,7 +21,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { defineMessages, useIntl } from "react-intl";
 
-import MapItem from "./MapItem";
+import IccaItem from "./MapItem";
 import LoadingScreen from "./LoadingScreen";
 import useCreateBoundary from "./hooks/useCreateBoundary";
 import Typography from "@material-ui/core/Typography";
@@ -32,20 +32,20 @@ const msgs = defineMessages({
   empty: {
     id: "empty_state",
     defaultMessage:
-      'Click "ADD MAP" to publicly share a map from a .mapeoicca file exported from Mapeo',
+      'Click "ADD ICCA" to share your ICCA exported from Mapeo with the WCMC',
   },
   confirmDeleteTitle: {
     id: "confirm_delete_title",
-    defaultMessage: "Delete this map?",
+    defaultMessage: "Delete this ICCA boundary?",
   },
   confirmDeleteDesc: {
     id: "confirm_delete_desc",
     defaultMessage:
-      "If you delete this map, links to it will no longer work and it will no longer be available on the internet",
+      "If you delete this ICCA boundary, the WCMC will no longer be able to access this data online. The boundary in your local copy of Mapeo will not be deleted",
   },
   addMap: {
     id: "add_map_button",
-    defaultMessage: "Add Map",
+    defaultMessage: "Add ICCA",
   },
   confirmCancel: {
     id: "confirm_cancel",
@@ -88,7 +88,7 @@ async function unzip(zipfile) {
   return Promise.all(filePromises);
 }
 
-const AddMapButton = ({ disabled, inputProps }) => {
+const AddIccaButton = ({ disabled, inputProps }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
@@ -203,7 +203,7 @@ export default function Home({ location, initializing }) {
 
   return (
     <div {...getRootProps()} className={classes.root}>
-      <AddMapButton
+      <AddIccaButton
         disabled={state.value === "loading"}
         inputProps={getInputProps()}
       />
@@ -222,7 +222,7 @@ export default function Home({ location, initializing }) {
             .filter((map) => map.id !== state.id || state.value === "done")
             .map((map) => (
               <Grow in key={map.id}>
-                <MapItem
+                <IccaItem
                   {...map}
                   onDelete={handleDelete}
                   onEdit={(id) => setEditing(id)}
