@@ -5,9 +5,7 @@ import {
   CardContent,
   LinearProgress,
   Typography,
-  Button,
 } from "@material-ui/core";
-import RetryIcon from "@material-ui/icons/Autorenew";
 import { defineMessages, useIntl } from "react-intl";
 import BalanceText from "react-balance-text";
 import clsx from "clsx";
@@ -28,7 +26,7 @@ const msgs = defineMessages({
   },
 });
 
-export default function UploadProgress({ id, state, error, retry }) {
+export default function UploadProgress({ id, state, error }) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
@@ -56,17 +54,6 @@ export default function UploadProgress({ id, state, error, retry }) {
               </>
             )}
           </div>
-          {state === "error" && (
-            <Button
-              variant="contained"
-              color="default"
-              className={classes.button}
-              onClick={() => retry(id)}
-            >
-              Retry
-              <RetryIcon color="inherit" className={classes.rightIcon} />
-            </Button>
-          )}
         </div>
         <LinearProgress
           variant={state === "loading" ? "indeterminate" : "determinate"}

@@ -4,34 +4,22 @@ import MuiAppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import ShareIcon from "@material-ui/icons/Share";
 import { defineMessages, useIntl } from "react-intl";
-import { Tooltip } from "@material-ui/core";
-import { useAuthState } from "react-firebase-hooks/auth";
-import firebase from "firebase/app";
 
 const msgs = defineMessages({
   title: {
     id: "app_title",
-    defaultMessage: "My Mapeo Maps",
+    defaultMessage: "My Mapeo ICCA Boundaries",
   },
   logout: {
     id: "logout_button",
     defaultMessage: "Logout",
-  },
-  share: {
-    id: "share_all",
-    defaultMessage: "Public link to all maps",
-  },
+  }
 });
 
 export default function AppBar({ onLogoutClick }) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
-  const [user] = useAuthState(firebase.auth());
-  const shareUrl =
-    user && `https://maps-public.mapeo.world/groups/${user.uid}/maps/`;
 
   return (
     <MuiAppBar position="static" color="default" className={classes.root}>
@@ -40,17 +28,6 @@ export default function AppBar({ onLogoutClick }) {
           {formatMessage(msgs.title)}
         </Typography>
         <div className={classes.buttonContainer}>
-          <Tooltip title={formatMessage(msgs.share)}>
-            <IconButton
-              color="inherit"
-              component="a"
-              href={shareUrl}
-              target="_blank"
-              disabled={!shareUrl}
-            >
-              <ShareIcon />
-            </IconButton>
-          </Tooltip>
           <Button color="inherit" onClick={onLogoutClick} variant="outlined">
             {formatMessage(msgs.logout)}
           </Button>

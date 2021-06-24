@@ -19,11 +19,16 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { defineMessages, useIntl } from "react-intl";
+import {
+  defineMessages,
+  useIntl,
+  FormattedDate,
+  FormattedTime,
+} from "react-intl";
 
-import MapItem from "./MapItem";
+import IccaItem from "./MapItem";
 import LoadingScreen from "./LoadingScreen";
-import useCreateBoundary from "./hooks/useCreateBoundary";
+import useCreateBoundaries from "./hooks/useCreateBoundaries";
 import Typography from "@material-ui/core/Typography";
 import UploadProgress from "./UploadProgress";
 import EditDialog from "./EditDialog";
@@ -32,20 +37,20 @@ const msgs = defineMessages({
   empty: {
     id: "empty_state",
     defaultMessage:
-      'Click "ADD MAP" to publicly share a map from a .mapeomap file exported from Mapeo',
+      'Click "ADD ICCA" to share your ICCA exported from Mapeo with the WCMC',
   },
   confirmDeleteTitle: {
     id: "confirm_delete_title",
-    defaultMessage: "Delete this map?",
+    defaultMessage: "Delete this ICCA boundary?",
   },
   confirmDeleteDesc: {
     id: "confirm_delete_desc",
     defaultMessage:
-      "If you delete this map, links to it will no longer work and it will no longer be available on the internet",
+      "If you delete this ICCA boundary, the WCMC will no longer be able to access this data online. The boundary in your local copy of Mapeo will not be deleted",
   },
   addMap: {
     id: "add_map_button",
-    defaultMessage: "Add Map",
+    defaultMessage: "Add ICCA",
   },
   confirmCancel: {
     id: "confirm_cancel",
@@ -57,8 +62,10 @@ const msgs = defineMessages({
   },
 });
 
-// Unzips a File and returns an array of objects containing the file data (as an
-// arraybuffer or string), filename, date
+// Unzips a File and returns an array of objects containing the file data (as a
+// string), filename, date. Note: the original implementation from mapeo-webmaps
+// needed arraybuffers for images, for icca packages all files are text (only
+// json and geojson) so we drop any files in the zip that don't match the extension
 async function unzip(zipfile) {
   const zip = await new JSZip().loadAsync(zipfile);
   const filePromises = [];
@@ -67,7 +74,13 @@ async function unzip(zipfile) {
     // Ignore folders, dot files and __MACOSX files and other strange files we don't need
     if (file.dir || filepath.startsWith("__") || filename.startsWith("."))
       return;
-    const type = path.extname(filepath) === ".json" ? "string" : "arraybuffer";
+    // Ignore files that are not .json or .geojson
+    if (
+      path.extname(filepath) !== ".json" &&
+      path.extname(filepath) !== ".geojson"
+    )
+      return;
+    const type = "string";
     filePromises.push(
       file.async(type).then((data) => ({
         type,
@@ -80,12 +93,12 @@ async function unzip(zipfile) {
   return Promise.all(filePromises);
 }
 
-const AddMapButton = ({ disabled, inputProps }) => {
+const AddIccaButton = ({ disabled, inputProps }) => {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   return (
     <>
-      <input {...inputProps} id="contained-button-file" accept=".mapeomap" />
+      <input {...inputProps} id="contained-button-file" accept=".mapeoicca" />
       <label htmlFor="contained-button-file">
         <Zoom in key={1}>
           <Fab
@@ -134,33 +147,41 @@ const ConfirmDialog = ({ open, onCancel, confirm }) => {
   );
 };
 
+const Subheader = ({ value }) => (
+  <>
+    <i>Uploaded: </i>
+    <FormattedDate year="numeric" month="long" day="2-digit" value={value} />
+    <FormattedTime value={value} />
+  </>
+);
+
 export default function Home({ location, initializing }) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [editing, setEditing] = useState();
   const [confirm, setConfirm] = useState();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [state, createMap, retry] = useCreateBoundary();
+  const [state, createBoundaries] = useCreateBoundaries();
   const [user] = useAuthState(firebase.auth());
   const [
-    maps = [],
+    iccas = [],
     loading,
   ] = useCollectionData(
     firebase
       .firestore()
-      .collection(`groups/${user.uid}/maps`)
-      .orderBy("createdAt", "desc"),
+      .collection(`groups/${user.uid}/iccas`)
+      .orderBy("uploaded", "desc"),
     { idField: "id" }
   );
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
-      if (!acceptedFiles.length || !acceptedFiles[0].name.match(/.mapeomap$/))
+      if (!acceptedFiles.length || !acceptedFiles[0].name.match(/.mapeoicca$/))
         return console.log("invalid file", acceptedFiles[0]);
       const files = await unzip(acceptedFiles[0]);
-      createMap(files);
+      createBoundaries(files);
     },
-    [createMap]
+    [createBoundaries]
   );
 
   const handleDelete = useCallback(
@@ -171,7 +192,7 @@ export default function Home({ location, initializing }) {
         action: () => {
           firebase
             .firestore()
-            .collection(`groups/${user.uid}/maps`)
+            .collection(`groups/${user.uid}/iccas`)
             .doc(id)
             .delete()
             .then(() => setConfirmOpen(false));
@@ -183,7 +204,7 @@ export default function Home({ location, initializing }) {
     [formatMessage, user.uid]
   );
 
-  const shareUrlBase = `https://maps-public.mapeo.world/groups/${user.uid}/maps/`;
+  const shareUrlBase = `/api/groups/${user.uid}/iccas/`;
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -192,38 +213,35 @@ export default function Home({ location, initializing }) {
   });
 
   if (loading || initializing) return <LoadingScreen />;
-
+  console.log(iccas);
   return (
     <div {...getRootProps()} className={classes.root}>
-      <AddMapButton
+      <AddIccaButton
         disabled={state.value === "loading"}
         inputProps={getInputProps()}
       />
-      <Container maxWidth="md" className={classes.container}>
-        <TransitionGroup>
+      <Container maxWidth={false}>
+        <TransitionGroup className={classes.container}>
           {state.value === "loading" && (
             <Grow in>
-              <UploadProgress
-                state={state.value}
-                error={state.error}
-                retry={retry}
-              />
+              <UploadProgress state={state.value} error={state.error} />
             </Grow>
           )}
-          {maps
-            .filter((map) => map.id !== state.id || state.value === "done")
-            .map((map) => (
-              <Grow in key={map.id}>
-                <MapItem
-                  {...map}
-                  onDelete={handleDelete}
-                  onEdit={(id) => setEditing(id)}
-                  shareUrl={shareUrlBase + map.id}
-                />
-              </Grow>
-            ))}
+          {iccas.map((icca) => (
+            <Grow in key={icca.id}>
+              <IccaItem
+                id={icca.id}
+                title={icca.properties.name}
+                subheader={<Subheader value={icca.uploaded.toDate()} />}
+                geometry={JSON.parse(icca.geometry)}
+                onDelete={handleDelete}
+                onEdit={(id) => setEditing(id)}
+                shareUrl={shareUrlBase + icca.id}
+              />
+            </Grow>
+          ))}
         </TransitionGroup>
-        {state.value !== "loading" && !maps.length && (
+        {state.value !== "loading" && !iccas.length && (
           <Typography
             variant="body1"
             color="textSecondary"
@@ -259,10 +277,10 @@ const useStyles = makeStyles({
   container: {
     flex: 1,
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
+    flexWrap: "wrap",
     padding: 24,
     paddingTop: 36,
-    alignItems: "stretch",
   },
   loading: {
     flexGrow: 1,

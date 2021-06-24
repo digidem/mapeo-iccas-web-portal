@@ -54,7 +54,7 @@
     "message": "Email Address"
   },
   "empty_state": {
-    "message": "Click \"ADD MAP\" to publicly share a map from a .mapeomap file exported from Mapeo"
+    "message": "Click \"ADD MAP\" to publicly share a map from a .mapeoicca file exported from Mapeo"
   },
   "file_uploading": {
     "message": "Uploading file {currentFile} of {totalFiles}"

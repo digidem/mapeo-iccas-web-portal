@@ -31,7 +31,7 @@ export default function DropArea({
         align="center"
         gutterBottom
       >
-        Drag & Drop a <span className={classes.mono}>.mapeomap</span> file here
+        Drag & Drop a <span className={classes.mono}>.mapeoicca</span> file here
         to create a new map
       </Typography>
       <Typography align="center" gutterBottom>

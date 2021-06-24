@@ -10,25 +10,14 @@ import "firebase/storage";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
-if (process.env.NODE_ENV === "development") {
-  // Use staging credentials when running locally
-  init({
-    projectId: "mapeo-webmaps-staging",
-    appId: "1:354071501370:web:a92ea6497d55c4dd9ab303",
-    storageBucket: "mapeo-webmaps-staging.appspot.com",
-    locationId: "us-central",
-    apiKey: "AIzaSyAddUwtJxCTq3VImtID0S-5beOHiJtKTe4",
-    authDomain: "mapeo-webmaps-staging.firebaseapp.com",
-    messagingSenderId: "354071501370",
-    measurementId: "G-GLMDFRWPJD",
-  });
-} else {
-  // Get credentials according to environment (production, staging)
-  // https://firebase.google.com/docs/hosting/reserved-urls
-  fetch("/__/firebase/init.json").then(async (response) => {
-    init(await response.json());
-  });
-}
+// Get credentials according to environment (production, staging)
+// https://firebase.google.com/docs/hosting/reserved-urls
+//
+// In dev we use the package.json "proxy" field to configure webpack to proxy
+// this to the local Firebase emulator on port 5001
+fetch("/__/firebase/init.json").then(async (response) => {
+  init(await response.json());
+});
 
 function init(firebaseConfig) {
   firebase.initializeApp(firebaseConfig);

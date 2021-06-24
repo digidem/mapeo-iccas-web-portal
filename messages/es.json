@@ -54,7 +54,7 @@
     "message": "Correo Electrónico"
   },
   "empty_state": {
-    "message": "Haga un clic en \"AGREGAR MAPA\" para compartir con el public un archivo .mapeomap exportado desde Mapeo"
+    "message": "Haga un clic en \"AGREGAR MAPA\" para compartir con el public un archivo .mapeoicca exportado desde Mapeo"
   },
   "file_uploading": {
     "message": "Subiendo archivo {currentFile} de {totalFiles} archivos"
