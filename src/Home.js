@@ -232,7 +232,9 @@ export default function Home({ location, initializing }) {
               <IccaItem
                 id={icca.id}
                 title={icca.properties.name}
-                subheader={<Subheader value={icca.uploaded.toDate()} />}
+                subheader={
+                  icca.uploaded && <Subheader value={icca.uploaded.toDate()} />
+                }
                 geometry={JSON.parse(icca.geometry)}
                 onDelete={handleDelete}
                 onEdit={(id) => setEditing(id)}
