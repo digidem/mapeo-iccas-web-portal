@@ -9,6 +9,7 @@
     "@reach/router": "^1.2.1",
     "clsx": "^1.0.4",
     "firebase": "^8.6.8",
+    "geojson-polyline": "^1.0.3",
     "js-md5": "^0.7.3",
     "json-stable-stringify": "^1.0.1",
     "jszip": "^3.6.0",

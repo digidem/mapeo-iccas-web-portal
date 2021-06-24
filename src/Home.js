@@ -19,11 +19,16 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { defineMessages, useIntl } from "react-intl";
+import {
+  defineMessages,
+  useIntl,
+  FormattedDate,
+  FormattedTime,
+} from "react-intl";
 
 import IccaItem from "./MapItem";
 import LoadingScreen from "./LoadingScreen";
-import useCreateBoundary from "./hooks/useCreateBoundary";
+import useCreateBoundaries from "./hooks/useCreateBoundaries";
 import Typography from "@material-ui/core/Typography";
 import UploadProgress from "./UploadProgress";
 import EditDialog from "./EditDialog";
@@ -142,22 +147,30 @@ const ConfirmDialog = ({ open, onCancel, confirm }) => {
   );
 };
 
+const Subheader = ({ value }) => (
+  <>
+    <i>Uploaded: </i>
+    <FormattedDate year="numeric" month="long" day="2-digit" value={value} />
+    <FormattedTime value={value} />
+  </>
+);
+
 export default function Home({ location, initializing }) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
   const [editing, setEditing] = useState();
   const [confirm, setConfirm] = useState();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [state, createMap, retry] = useCreateBoundary();
+  const [state, createBoundaries] = useCreateBoundaries();
   const [user] = useAuthState(firebase.auth());
   const [
-    maps = [],
+    iccas = [],
     loading,
   ] = useCollectionData(
     firebase
       .firestore()
       .collection(`groups/${user.uid}/iccas`)
-      .orderBy("createdAt", "desc"),
+      .orderBy("uploaded", "desc"),
     { idField: "id" }
   );
 
@@ -166,9 +179,9 @@ export default function Home({ location, initializing }) {
       if (!acceptedFiles.length || !acceptedFiles[0].name.match(/.mapeoicca$/))
         return console.log("invalid file", acceptedFiles[0]);
       const files = await unzip(acceptedFiles[0]);
-      createMap(files);
+      createBoundaries(files);
     },
-    [createMap]
+    [createBoundaries]
   );
 
   const handleDelete = useCallback(
@@ -200,38 +213,35 @@ export default function Home({ location, initializing }) {
   });
 
   if (loading || initializing) return <LoadingScreen />;
-
+  console.log(iccas);
   return (
     <div {...getRootProps()} className={classes.root}>
       <AddIccaButton
         disabled={state.value === "loading"}
         inputProps={getInputProps()}
       />
-      <Container maxWidth="md" className={classes.container}>
-        <TransitionGroup>
+      <Container maxWidth={false}>
+        <TransitionGroup className={classes.container}>
           {state.value === "loading" && (
             <Grow in>
-              <UploadProgress
-                state={state.value}
-                error={state.error}
-                retry={retry}
-              />
+              <UploadProgress state={state.value} error={state.error} />
             </Grow>
           )}
-          {maps
-            .filter((map) => map.id !== state.id || state.value === "done")
-            .map((map) => (
-              <Grow in key={map.id}>
-                <IccaItem
-                  {...map}
-                  onDelete={handleDelete}
-                  onEdit={(id) => setEditing(id)}
-                  shareUrl={shareUrlBase + map.id}
-                />
-              </Grow>
-            ))}
+          {iccas.map((icca) => (
+            <Grow in key={icca.id}>
+              <IccaItem
+                id={icca.id}
+                title={icca.properties.name}
+                subheader={<Subheader value={icca.uploaded.toDate()} />}
+                geometry={JSON.parse(icca.geometry)}
+                onDelete={handleDelete}
+                onEdit={(id) => setEditing(id)}
+                shareUrl={shareUrlBase + icca.id}
+              />
+            </Grow>
+          ))}
         </TransitionGroup>
-        {state.value !== "loading" && !maps.length && (
+        {state.value !== "loading" && !iccas.length && (
           <Typography
             variant="body1"
             color="textSecondary"
@@ -267,10 +277,10 @@ const useStyles = makeStyles({
   container: {
     flex: 1,
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
+    flexWrap: "wrap",
     padding: 24,
     paddingTop: 36,
-    alignItems: "stretch",
   },
   loading: {
     flexGrow: 1,

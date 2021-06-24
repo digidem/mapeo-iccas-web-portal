@@ -1,55 +1,64 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import Typography from "@material-ui/core/Typography";
-import LinkIcon from "@material-ui/icons/Link";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  Card,
+  CardMedia,
+  CardActions,
+  Button,
+  CardHeader,
+} from "@material-ui/core";
+import ShareIcon from "@material-ui/icons/Share";
+import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import { defineMessages, useIntl } from "react-intl";
+import { encode } from "geojson-polyline";
 
 const msgs = defineMessages({
   publicLink: {
     id: "public_link_tooltip",
-    defaultMessage: "Public link to Map"
+    defaultMessage: "Public link to Map",
   },
   edit: {
     id: "edit_tooltip",
-    defaultMessage: "Edit Map details"
+    defaultMessage: "Edit Map details",
   },
   replaceData: {
     id: "upload_new_data",
-    defaultMessage: "Upload new data"
+    defaultMessage: "Upload new data",
   },
-  deleteMap: {
-    id: "delete_map",
-    defaultMessage: "Delete Map"
-  }
+  deleteIcca: {
+    id: "delete_icca",
+    defaultMessage: "Delete ICCA",
+  },
 });
 
-export default function MapItem({
-  id,
-  title,
-  description,
-  onDelete,
-  onEdit,
-  shareUrl
-}) {
+const MAP_SIZE = [400, 300];
+
+export default function MapItem({ id, title, subheader, geometry, onDelete }) {
   const classes = useStyles();
   const { formatMessage } = useIntl();
 
   return (
     <Card className={classes.root}>
-      <div className={classes.actions}>
-        <Typography variant="h5" component="h2" className={classes.title}>
-          {title}
-        </Typography>
+      <CardMedia
+        className={classes.map}
+        image={getMapboxStaticMapUrl(geometry, { width: 400, height: 300 })}
+        title="Static map of ICCA boundary"
+      />
+      <CardHeader title={title} subheader={subheader} />
+      <CardActions disableSpacing>
+        {/* Temporarily disable share functionality
         <Tooltip title={formatMessage(msgs.publicLink)} placement="top">
-          <IconButton component="a" href={shareUrl} target="_blank">
-            <LinkIcon />
-          </IconButton>
-        </Tooltip>
+          <Button
+            variant="contained"
+            color="default"
+            className={classes.button}
+            startIcon={<ShareIcon />}
+          >
+            Share
+          </Button>
+        </Tooltip> */}
         {/* Temporarily disable edit functionality
         <Tooltip title={formatMessage(msgs.edit)} placement="top">
           <IconButton onClick={() => onEdit(id)}>
@@ -57,41 +66,59 @@ export default function MapItem({
           </IconButton>
         </Tooltip>
         */}
-        <Tooltip title={formatMessage(msgs.deleteMap)} placement="top">
-          <IconButton onClick={() => onDelete(id)}>
+        <Tooltip title={formatMessage(msgs.deleteIcca)} placement="top">
+          <IconButton
+            onClick={() => onDelete(id)}
+            className={classes.deleteButton}
+          >
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      </div>
-      <Typography
-        variant="body2"
-        color="textSecondary"
-        component="p"
-        className={classes.description}
-      >
-        {description}
-      </Typography>
+      </CardActions>
     </Card>
   );
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
-    margin: 12
+    margin: 12,
+    maxWidth: MAP_SIZE[0],
   },
-  actions: {
-    display: "flex",
-    alignItems: "center",
-    minHeight: 48,
-    padding: 8,
-    paddingBottom: 0
+  map: {
+    width: MAP_SIZE[0],
+    height: MAP_SIZE[1],
   },
   title: {
     flexGrow: 1,
-    marginLeft: 8
+    marginLeft: 8,
   },
   description: {
     padding: 16,
-    paddingTop: 0
-  }
-});
+    paddingTop: 0,
+  },
+  deleteButton: {
+    marginLeft: "auto",
+  },
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
+
+function getMapboxStaticMapUrl(
+  geometry,
+  {
+    strokeColor = "11ff00",
+    strokeOpacity = 0.9,
+    fillColor = "000000",
+    fillOpacity = 0.2,
+    strokeWidth = 3,
+    width = 300,
+    height = 200,
+  } = {}
+) {
+  const { coordinates: polyline } = encode(geometry, { precision: 5 });
+  const retina = window.devicePixelRatio > 1 ? "@2x" : "";
+  const mapboxToken =
+    "pk.eyJ1IjoiZGlnaWRlbSIsImEiOiJja3FiNTBuMnYwamEyMnZvdmw0cDB2YWUzIn0.TKWZTpRSPVZOvDagjuVaZw";
+  return `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/path-${strokeWidth}+${strokeColor}-${strokeOpacity}+${fillColor}-${fillOpacity}(${polyline})/auto/${width}x${height}${retina}?access_token=${mapboxToken}`;
+}
