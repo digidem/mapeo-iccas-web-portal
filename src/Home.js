@@ -222,11 +222,11 @@ export default function Home({ location, initializing }) {
       />
       <Container maxWidth={false}>
         <TransitionGroup className={classes.container}>
-          {state.value === "loading" && (
+          {/* {state.value === "loading" && (
             <Grow in>
               <UploadProgress state={state.value} error={state.error} />
             </Grow>
-          )}
+          )} */}
           {iccas.map((icca) => (
             <Grow in key={icca.id}>
               <IccaItem
