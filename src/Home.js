@@ -213,7 +213,7 @@ export default function Home({ location, initializing }) {
   });
 
   if (loading || initializing) return <LoadingScreen />;
-  console.log(iccas);
+
   return (
     <div {...getRootProps()} className={classes.root}>
       <AddIccaButton
