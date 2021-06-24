@@ -33,7 +33,7 @@ router.get(
         res.end();
         return;
       }
-      data.url = `${this.origin}${this.pathname}?access_token=${this.query.accessToken}`;
+      data.url = `${this.origin}${this.pathname}?access_token=${this.query.access_token}`;
       res.setHeader("Content-Type", "application/json");
       res.send(JSON.stringify(data));
     } catch (e) {
@@ -59,7 +59,7 @@ router.get("/api/iccas", async function (req, res) {
     const data = await Promise.all(
       snap.docs.map(async (doc) => {
         const icca = await getIcca(doc.ref);
-        icca.url = `${this.origin}/api/${doc.ref.path}?access_token=${this.query.accessToken}`;
+        icca.url = `${this.origin}/api/${doc.ref.path}?access_token=${this.query.access_token}`;
         return icca;
       })
     );
