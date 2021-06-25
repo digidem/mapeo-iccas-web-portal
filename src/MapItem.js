@@ -109,7 +109,8 @@ function getMapboxStaticMapUrl(
     height = 200,
   } = {}
 ) {
-  const { coordinates: polyline } = encode(geometry, { precision: 5 });
+  const { coordinates } = encode(geometry, { precision: 5 });
+  const polyline = encodeURIComponent(coordinates);
   const retina = window.devicePixelRatio > 1 ? "@2x" : "";
   const mapboxToken =
     "pk.eyJ1IjoiZGlnaWRlbSIsImEiOiJja3FiNTBuMnYwamEyMnZvdmw0cDB2YWUzIn0.TKWZTpRSPVZOvDagjuVaZw";
