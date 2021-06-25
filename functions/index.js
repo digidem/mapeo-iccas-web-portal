@@ -101,7 +101,9 @@ function transformIcca(icca) {
 exports.api = functions.https.onRequest((req, res) => {
   try {
     const url = new URL(
-      `${req.headers["x-forwarded-proto"]}://${req.headers["x-forwarded-host"]}/${req.url}`
+      `${req.headers["x-forwarded-proto"] || "http"}://${
+        req.headers["x-forwarded-host"]
+      }/${req.url}`
     );
     const accessToken = url.searchParams.get("access_token");
     if (!accessToken || accessToken !== functions.config().mapeo.token) {
