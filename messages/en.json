@@ -1,9 +1,9 @@
 {
   "add_map_button": {
-    "message": "Add Map"
+    "message": "Add ICCA"
   },
   "app_title": {
-    "message": "My Mapeo Maps"
+    "message": "My Mapeo ICCA Boundaries"
   },
   "auth/email-already-in-use": {
     "message": "Email is already in use (you probably already have an account)"
@@ -33,13 +33,13 @@
     "message": "Yes"
   },
   "confirm_delete_desc": {
-    "message": "If you delete this map, links to it will no longer work and it will no longer be available on the internet"
+    "message": "If you delete this ICCA boundary, the WCMC will no longer be able to access this data online. The boundary in your local copy of Mapeo will not be deleted"
   },
   "confirm_delete_title": {
-    "message": "Delete this map?"
+    "message": "Delete this ICCA boundary?"
   },
-  "delete_map": {
-    "message": "Delete Map"
+  "delete_icca": {
+    "message": "Delete ICCA"
   },
   "description_label": {
     "message": "Map Description"
@@ -54,7 +54,7 @@
     "message": "Email Address"
   },
   "empty_state": {
-    "message": "Click \"ADD MAP\" to publicly share a map from a .mapeoicca file exported from Mapeo"
+    "message": "Click \"ADD ICCA\" to share your ICCA exported from Mapeo with the WCMC"
   },
   "file_uploading": {
     "message": "Uploading file {currentFile} of {totalFiles}"
@@ -103,9 +103,6 @@
   },
   "save_button": {
     "message": "Save"
-  },
-  "share_all": {
-    "message": "Public link to all maps"
   },
   "signup_button": {
     "message": "Signup"
