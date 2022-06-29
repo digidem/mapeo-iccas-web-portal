@@ -49,7 +49,7 @@ const msgs = defineMessages({
   },
   addMap: {
     id: "add_map_button",
-    defaultMessage: "Add ICCA",
+    defaultMessage: "ICCA DATA",
   },
   confirmCancel: {
     id: "confirm_cancel",
