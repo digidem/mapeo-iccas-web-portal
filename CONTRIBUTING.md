@@ -1,10 +1,10 @@
 ## Get started
 
-You will need [Node v12 or later](https://nodejs.org/en/) installed, then clone this repo and change into the folder you have cloned into:
+You will need [Node v16 or later](https://nodejs.org/en/) installed, then clone this repo and change into the folder you have cloned into:
 
 ```sh
-git clone https://github.com/digidem/mapeo-webmaps.git
-cd mapeo-webmaps
+git clone https://github.com/digidem/mapeo-iccas-web-portal
+cd mapeo-iccas-web-portal
 ```
 
 Then install dependencies with `npm` (npm is installed with Node)
@@ -52,5 +52,39 @@ npm run test:frontend
 In a terminal window, run:
 
 ```sh
-npm run deploy
+npm run build
+firebase deploy
+```
+
+## Troubleshooting 
+
+### Errors on `npm test`, `npm run start:emulators` or deployment
+
+#### 1. Dependencies:
+
+**Firebase tools**
+
+- node version needed is 16.4.0 or higher
+- `npm install -g firebase-tools`
+
+#### 2. Java errors on macOS - https://stackoverflow.com/questions/44009058/even-though-jre-8-is-installed-on-my-mac-no-java-runtime-present-requesting-t
+
+```sh
+brew install openjdk
+sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+```
+
+#### 3. Errors on running locally emulators
+
+Might need to change port 5000 in firebase.json - to run locally.
+if error occurs (don’t commit those changes) - line 34 firebase.json
+
+>     "hosting": {
+>      "port": 5000
+>    },
+
+
+```sh
+cd functions
+firebase functions:config:get > .runtimeconfig.json.
 ```
