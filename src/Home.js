@@ -37,7 +37,7 @@ const msgs = defineMessages({
   empty: {
     id: "empty_state",
     defaultMessage:
-      'Click "ADD ICCA" to share your ICCA exported from Mapeo with the WCMC',
+      'Click "ICCA DATA" to share your ICCA information with UNEP-WCMC',
   },
   confirmDeleteTitle: {
     id: "confirm_delete_title",
@@ -46,7 +46,7 @@ const msgs = defineMessages({
   confirmDeleteDesc: {
     id: "confirm_delete_desc",
     defaultMessage:
-      "If you delete this ICCA boundary, the WCMC will no longer be able to access this data online. The boundary in your local copy of Mapeo will not be deleted",
+      "If you delete this ICCA boundary, UNEP-WCMC will no longer be able to access this data online. However, your local copy will not be deleted",
   },
   addMap: {
     id: "add_map_button",
