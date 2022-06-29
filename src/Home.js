@@ -30,7 +30,6 @@ import IccaItem from "./MapItem";
 import LoadingScreen from "./LoadingScreen";
 import useCreateBoundaries from "./hooks/useCreateBoundaries";
 import Typography from "@material-ui/core/Typography";
-import UploadProgress from "./UploadProgress";
 import EditDialog from "./EditDialog";
 
 const msgs = defineMessages({
@@ -50,7 +49,7 @@ const msgs = defineMessages({
   },
   addMap: {
     id: "add_map_button",
-    defaultMessage: "Add ICCA",
+    defaultMessage: "ICCA DATA",
   },
   confirmCancel: {
     id: "confirm_cancel",
