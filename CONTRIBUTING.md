@@ -1,17 +1,21 @@
 ## Get started
 
-You will need [Node v16 or later](https://nodejs.org/en/) installed, then clone this repo and change into the folder you have cloned into:
+1. You will need [Node v16 or later](https://nodejs.org/en/) installed, then clone this repo and change into the folder you have cloned into:
 
 ```sh
 git clone https://github.com/digidem/mapeo-iccas-web-portal
 cd mapeo-iccas-web-portal
 ```
 
-Then install dependencies with `npm` (npm is installed with Node)
+2. Then install dependencies with `npm` (npm is installed with Node)
 
 ```sh
 npm install
 ```
+
+3. Login to firebase for icca - Dagmara's credentials on LastPass
+
+4. Might need to be added as collaborator to repo - Dagmara(RainbowGiantSquid) is is the admin, can add
 
 ## Start Dev server
 
